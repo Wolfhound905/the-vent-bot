@@ -6,7 +6,7 @@ from configuration import get_token, get_guilds
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix=".", intents=intents)
+bot = commands.Bot(command_prefix="_", intents=intents)
 slash = SlashCommand(bot, sync_commands=False, override_type = True)
 activity = discord.Activity(name='in the vents', type=discord.ActivityType.playing)
 

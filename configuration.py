@@ -29,10 +29,6 @@ def get_welcome_channel() -> int:
 def get_token() -> str:
     return env["DISCORD_TOKEN"]
 
-
-def get_user_name() -> str:
-    return env["USER_NAME"]
-
 def get_admins() -> list:
     return env["ADMINS"]
 
