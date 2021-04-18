@@ -53,18 +53,14 @@ class welcome(commands.Cog):
             """, file= discord.File("/home/wolfhound/discord-bots/the-vent-bot/resources/welcome_pfp.png"))
             os.remove("./resources/welcome_pfp.png")
 
-    @commands.command(name='test')
-    async def test(self, ctx):
-        user: discord.Member = ctx.author
+    # @commands.command(name='test')
+    # async def test(self, ctx):
+    #     user: discord.Member = ctx.author
 
-        await self.make_welcome_image(user)
+    #     await self.make_welcome_image(user)
 
-        await ctx.send(content="here", file= discord.File("/home/wolfhound/discord-bots/the-vent-bot/resources/welcome_pfp.png"))
-        os.remove("./resources/welcome_pfp.png")
-
-
-
-
+    #     await ctx.send(content="here", file= discord.File("/home/wolfhound/discord-bots/the-vent-bot/resources/welcome_pfp.png"))
+    #     os.remove("./resources/welcome_pfp.png")
 
 
 def setup(bot):
