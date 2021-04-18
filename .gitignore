@@ -1,0 +1,10 @@
+#Ignore the env
+.env
+/env
+
+#ignore this stuff that is just extra things 👍
+**/__pycache__/
+.vscode
+startup.sh
+
+yoyo.ini
