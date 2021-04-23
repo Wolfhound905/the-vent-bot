@@ -18,7 +18,17 @@ def load_env():
     for admin in os.getenv('ADMINS').split(","):
         env["ADMINS"].append(int(admin.strip()))
 
+    env["USER_NAME"] = os.getenv("USER_NAME")
+
+    env["PASSWORD"] = os.getenv("PASSWORD")
+
+    env["HOST"] = os.getenv("HOST")
+
+    env["DATABASE"] = os.getenv("DATABASE")
+
     env["WELCOME_CHANNEL"] = os.getenv("WELCOME_CHANNEL")
+
+    env["REACTION_ROLE"] = os.getenv("REACTION_ROLE")
 
 def get_guilds() -> list:
     return env["GUILD_ID"]
@@ -26,11 +36,32 @@ def get_guilds() -> list:
 def get_welcome_channel() -> int:
     return env["WELCOME_CHANNEL"]
 
+
 def get_token() -> str:
     return env["DISCORD_TOKEN"]
 
+
+def get_user_name() -> str:
+    return env["USER_NAME"]
+
+
+def get_password() -> str:
+    return env["PASSWORD"]
+
+
+def get_host() -> str:
+    return env["HOST"]
+
+
+def get_database() -> str:
+    return env["DATABASE"]
+
+
 def get_admins() -> list:
     return env["ADMINS"]
+
+def get_reaction_role() -> int:
+    return env["REACTION_ROLE"]
 
 
 # load enviroment variables on startup
