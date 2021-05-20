@@ -4,7 +4,7 @@ from discord_slash import cog_ext, SlashContext
 from configuration import get_guilds, get_admins
 import os
 import asyncio
-
+from database.voiceVCs import update_users
 guilds = get_guilds()
 admins = get_admins()
 
@@ -94,6 +94,18 @@ class adminCommands(commands.Cog):
 
         activity = discord.Activity(name=args, type=activity)
         await self.bot.change_presence(activity=activity)
+
+
+    
+    @commands.command(
+    name="members", description="update guild member list"
+    )
+    @commands.is_owner()
+    async def members(self, ctx):
+        await ctx.send("Indexing members now. This may take a bit.")
+        update_users(ctx.guild.members)
+        await ctx.send(f"Done! https://aidenhaines.com/vents/")
+
 
 def setup(bot):
     bot.add_cog(adminCommands(bot))

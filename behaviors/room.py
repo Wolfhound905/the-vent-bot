@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from configuration import get_guilds
+from profanity_filter import ProfanityFilter
 from database.voiceVCs import get_voice_channels, add_vc, remove_vc, get_command_message
 import asyncio
 
@@ -30,33 +31,33 @@ class createVC(commands.Cog):
         }
     ]
 
-    def get_category_by_name(self, guild, category_name):
-        category = None
-        for c in guild.categories:
-            if c.name == category_name:
-                category = c
-                break
-        return category
-
-
-
 
     @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext, channel_name: str, member_cap=0):
+    async def room(self, ctx: SlashContext, channel_name: str, member_cap=0):
         voice_state = ctx.author.voice
         if voice_state is None:
-            await ctx.send(hidden=True, content="You need to be in Mouth Chat to use this command.")
+            await ctx.send(hidden=True, content="You need to be in a voice channel to use this command.")
         else:
-            guild = ctx.guild
-            category = self.get_category_by_name(guild, "Voice Channels")
-            if member_cap >= 100 or member_cap <= -1:
-                await ctx.send(hidden=True, content=f"`{member_cap}` is out of range.\n1-99 is the vailid range for voice channel member caps.")
-                return
-            channel_name = (channel_name[:97] + '...') if len(channel_name) > 97 else channel_name
-            channel = await guild.create_voice_channel(channel_name, user_limit=member_cap, category=category)
-            response = await ctx.send(f"I created the voice channel {channel.mention}!")
-            add_vc(channel.id, response.channel.id, response.id)
-            await ctx.author.move_to(channel=channel)
+            pf = ProfanityFilter(languages=['en'])
+            if pf.is_clean(channel_name):
+                guild = ctx.guild
+                category = ctx.author.voice.channel.category
+                if member_cap >= 100 or member_cap <= -1:
+                    await ctx.send(hidden=True, content=f"`{member_cap}` is out of range.\n1-99 is the vailid range for voice channel member caps.")
+                    return
+                channel_name = (channel_name[:97] + '...') if len(channel_name) > 97 else channel_name
+                channel = await guild.create_voice_channel(channel_name, user_limit=member_cap, category=category, position=0)
+                response = await ctx.send(f"I created the voice channel {channel.mention}!")
+                logs_channel = self.bot.get_channel(835013284129669140)
+                await logs_channel.send(content=f"{ctx.author.mention} ({ctx.author.id}) created the voice channel {channel_name}.", allowed_mentions=discord.AllowedMentions.none())
+                add_vc(channel.id, response.channel.id, response.id)
+                await ctx.author.move_to(channel=channel)
+            else:
+                logs_channel = self.bot.get_channel(835013284129669140)
+                await ctx.send(content="You can not create a voice channel with profanity, this has been reported.")
+                await logs_channel.send(content=f"""⸻⸻\n||<@&799294477880918038><@&828499567812411412><@&764412431459549196>||\n"
+                                        {ctx.author.name} tried creating a profane voice channel ({channel_name})\n
+                                        `?warn {ctx.author.id} Attempting to create a profane voice channel '{channel_name}'`""", allowed_mentions=discord.AllowedMentions.none())
 
 
     def get_message(self, message_id):
@@ -85,9 +86,9 @@ class createVC(commands.Cog):
                     if len(before.channel.members) == 0:
                         await self.channel_cooldown(before.channel.id)
                         if len(before.channel.members) == 0:
-                            await before.channel.delete()
                             message = self.get_message(before.channel.id)
                             remove_vc(before.channel.id)
+                            await before.channel.delete()
                             await message.edit(content=f"Everybody left `{before.channel.name}` so I deleted it.")
                         else:
                             message = self.get_message(before.channel.id)

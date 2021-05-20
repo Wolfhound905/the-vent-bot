@@ -4,6 +4,18 @@ from configuration import (get_user_name, get_password, get_user_name, get_host,
 import mysql.connector
 
 
+def update_users(guild_members):
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
+    sql = db.cursor()
+
+    for Member in guild_members:
+        if not Member.bot and Member.guild.id == 759715539622428673:
+            sql.execute(f"""
+            REPLACE INTO users(id, name, avatar_url) values("{Member.id}", "{Member.name}", "{Member.avatar_url}")
+            """)
+    db.commit()
+    sql.close()
 
 def get_voice_channels() -> list:
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
@@ -15,12 +27,10 @@ def get_voice_channels() -> list:
 
     active_vc = []
 
+    sql.close()
     for row in rows:
         active_vc.append(row[0])
     return active_vc
-    sql.close()
-    # If no rows exist then raise an error
-    raise Exception("No rows to read")
 
 def add_vc(active_vc, message_channel_id, message_id):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
@@ -46,6 +56,7 @@ def get_command_message(delete_vc):
         "id": message_id,
         "channel": channel_id
     }
+    sql.close()
     return message
 
 def remove_vc(delete_vc):
